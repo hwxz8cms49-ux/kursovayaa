@@ -22,13 +22,13 @@
 #### Главное меню и выбор сложности
 Здесь игрок может запустить приложение и выбрать один из двух доступных режимов.
 
-![Главное меню](https://github.com/user-attachments/assets/ae8e7137-2681-445a-83d1-50f324d969a3)
-![Выбор сложности](https://github.com/user-attachments/assets/e7b2db5b-4061-479d-8b41-582c897d789f)
+![Главное меню](<img width="439" height="784" alt="image" src="https://github.com/user-attachments/assets/899e46e2-6302-4bc5-b259-ca31626f8c7f" />)
+![Выбор сложности](<img width="315" height="566" alt="image" src="https://github.com/user-attachments/assets/5b55c248-394c-46b2-a363-2c86922d5476" />)
 
 #### Игровой процесс
 Сетка 9x14, анималистичные спрайты фишек и подсветка выбранного животного.
 
-![Игровой процесс](https://github.com/user-attachments/assets/db43cc77-2e4f-4475-85fb-5250a06170e1)
+![Игровой процесс](<img width="313" height="564" alt="image" src="https://github.com/user-attachments/assets/ac6c7419-372d-4f35-b6a4-9fecfb1f70a8" />)
 
 #### Окно Паузы и Завершения игры
 Реализованная система приостановки игрового таймера и сохранения лучшего результата (High Score).
