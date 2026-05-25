@@ -19,21 +19,24 @@
 
 ## 🎮 Демонстрация геймплея
 
-### Главное меню и выбор сложности
+### 📱 Демонстрация геймплея
+
+#### Главное меню и выбор сложности
 Здесь игрок может запустить приложение и выбрать один из двух доступных режимов.
-![Главное меню](<img width="316" height="563" alt="Снимок экрана 2026-05-25 153929" src="https://github.com/user-attachments/assets/ae8e7137-2681-454a-83d1-50f324d969a3" />)
-![Выбор сложности] (<img width="313" height="566" alt="image" src="https://github.com/user-attachments/assets/e7b29db5-b406-479d-8b41-582c897d789f" />)
 
+<img src="https://github.com/user-attachments/assets/ae8e7137-2681-445a-83d1-50f324d969a3" width="316" height="563" alt="Главное меню" />
+<img src="https://github.com/user-attachments/assets/e7b2db5b-4061-4479-d8b1-582c897d789f" width="313" height="566" alt="Выбор сложности" />
 
-### Игровой процесс
+#### Игровой процесс
 Сетка 9x14, анималистичные спрайты фишек и подсветка выбранного животного.
-![Игровой процесс](<img width="313" height="564" alt="image" src="https://github.com/user-attachments/assets/db483cc7-2e4f-4475-85fb-5250a06170e1" />)
 
-### Окно Паузы и Завершения игры
+<img src="https://github.com/user-attachments/assets/db43cc77-2e4f-4475-85fb-5250a06170e1" width="313" height="564" alt="Игровой процесс" />
+
+#### Окно Паузы и Завершения игры
 Реализованная система приостановки игрового таймера и сохранения лучшего результата (High Score).
-![Пауза в игре](<img width="309" height="567" alt="image" src="https://github.com/user-attachments/assets/2b2698f2-81e6-4abc-b70f-86a45597a000" />)
-![Конец игры и лучший результат] (<img width="312" height="562" alt="image" src="https://github.com/user-attachments/assets/7a182163-3156-4674-959c-54bf71fbd043" />)
 
+<img src="https://github.com/user-attachments/assets/2b2698f2-81e6-4abc-b70f-86a45597a000" width="309" height="567" alt="Пауза в игре" />
+<img src="https://github.com/user-attachments/assets/7a182163-3156-4674-959c-54bf71fbd043" width="312" height="562" alt="Конец игры и лучший результат" />
 ---
 
 ## 🛠 Технологии и фишки проекта
