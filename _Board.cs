@@ -8,45 +8,51 @@ using Unity.VisualScripting;
 
 public class _Board : MonoBehaviour
 {
-    // размеры поля
     public int width = 9;
     public int height = 14;
 
-    // массивы для префабов (обычных и бонусных)
     public GameObject[] Prefabs;
     public GameObject[] BonusPrefabs;
 
-    // сетка игры
     private GameObject[,] AllAnimals;
     private GameObject CurrentAnimal;
 
-    // расстояние между фишками
     float spacingX = 100f;
     float spacingY = 100f;
     float offsetX;
     float offsetY;
 
-    // счет и таймер (интерфейс)
     public Text Score_;
     public TextMeshProUGUI Timer_;
     private int score = 0;
     private float timer = 60f;
 
-    // экран окончания игры
+    private string CurrentMode = "Normal";
+
     private bool IsGameOver = false;
+    private bool IsPaused = false;
     public GameObject GameOverPan;
+    public GameObject PausePan;
     public TextMeshProUGUI FinalScore;
     public TextMeshProUGUI BestScore;
     void Start()
     {
-        AllAnimals = new GameObject[width, height]; // массив для хранения ссылок на животных
-        CreateBoard(); // создание доски с префабами
-        StartCoroutine(CreateBonus()); // запуск таймера бонусов
+        CurrentMode = PlayerPrefs.GetString("GameMode", "Normal");
+        if (CurrentMode == "Normal")
+        {
+            Timer_.gameObject.SetActive(false);
+        }
+        else
+        {
+            Timer_.gameObject.SetActive(true);
+        }
+        AllAnimals = new GameObject[width, height]; 
+        CreateBoard();
+        StartCoroutine(CreateBonus()); 
     }
-    // создание доски с префабами
+    
     void CreateBoard()
     {
-        // расчет смещения по горизонтали и вертикали, чтобы сетка была по центру экрана
         offsetX = (width - 1) * spacingX / 2f;
         offsetY = (height - 1) * spacingY / 2f;
 
@@ -54,31 +60,29 @@ public class _Board : MonoBehaviour
         {
             for (int y = 0; y < height; y++)
             {
-                int RandomIndex = Random.Range(0, Prefabs.Length); // случайный индекс животного из массива
-                while (CoincidencesNearby(x, y, Prefabs[RandomIndex])) // проверка, чтобы не было 3 в ряд на старте
+                int RandomIndex = Random.Range(0, Prefabs.Length);
+                while (CoincidencesNearby(x, y, Prefabs[RandomIndex])) 
                 {
-                    RandomIndex = Random.Range(0, Prefabs.Length); // снова выбираем случайный индекс животного
+                    RandomIndex = Random.Range(0, Prefabs.Length); 
                 }
 
-                Vector2 pos = new Vector2(x * spacingX - offsetX, y * spacingY - offsetY); // вычисление позиции, умножаем номер ячейки на шаг и вычитаем смещение, чтобы сдвинуть поле к центру
+                Vector2 pos = new Vector2(x * spacingX - offsetX, y * spacingY - offsetY); 
 
-                GameObject Pet = Instantiate(Prefabs[RandomIndex], transform); // создаем на сцене выбранный префаб
-                Pet.GetComponent<RectTransform>().anchoredPosition = pos; // установление префаба в нужную точку на игровом поле
+                GameObject Pet = Instantiate(Prefabs[RandomIndex], transform); 
+                Pet.GetComponent<RectTransform>().anchoredPosition = pos; 
 
-                AllAnimals[x, y] = Pet; // передаем ссылку на созданный префаб в общий массив животных
+                AllAnimals[x, y] = Pet;
 
-                // передаем префабу его координаты в сетке
                 if (Pet.GetComponent<_InteractionWithAnimals>() != null)
                 {
                     _InteractionWithAnimals AnimalSettings = Pet.GetComponent<_InteractionWithAnimals>();
-                    AnimalSettings.x = x; 
+                    AnimalSettings.x = x;
                     AnimalSettings.y = y;
                 }
             }
         }
     }
-
-    // проверка совпадений поблизкости при генерации
+    
     bool CoincidencesNearby(int x, int y, GameObject Dot)
     {
         if (x > 1)
@@ -104,16 +108,15 @@ public class _Board : MonoBehaviour
         return false;
     }
 
-    // выбор фишки игроком
     public void SelectAnimal(GameObject pet)
     {
-        if (IsGameOver == true)
+        if (IsGameOver || IsPaused)
         {
             return;
         }
         if (CurrentAnimal == null)
         {
-            CurrentAnimal = pet; // выбираем первую фишку
+            CurrentAnimal = pet; 
             _InteractionWithAnimals FirstAnimal = CurrentAnimal.GetComponent<_InteractionWithAnimals>();
             if (FirstAnimal != null)
             {
@@ -122,7 +125,6 @@ public class _Board : MonoBehaviour
         }
         else
         {
-            // выбираем вторую фишку и проверяем, соседи ли они
             _InteractionWithAnimals FirstAnimal = CurrentAnimal.GetComponent<_InteractionWithAnimals>();
             if (FirstAnimal != null)
             {
@@ -134,7 +136,6 @@ public class _Board : MonoBehaviour
             int y2 = pet.GetComponent<_InteractionWithAnimals>().y;
             int calcX = Mathf.Abs(x1 - x2);
             int calcY = Mathf.Abs(y1 - y2);
-            // если соседи по горизонтал или вертикали
             if ((calcX == 1 && calcY == 0) || (calcX == 0 && calcY == 1))
             {
                 StartCoroutine(SwapAnimals(CurrentAnimal, pet));
@@ -142,7 +143,6 @@ public class _Board : MonoBehaviour
             CurrentAnimal = null;
         }
     }
-    // перемещение фишек местами
     IEnumerator SwapAnimals(GameObject pet1, GameObject pet2)
     {
         _InteractionWithAnimals PosPet1 = pet1.GetComponent<_InteractionWithAnimals>();
@@ -152,18 +152,15 @@ public class _Board : MonoBehaviour
         int CurrY2 = PosPet2.y;
         int CurrY1 = PosPet1.y;
 
-        // меняем фишки местами в массиве
         GameObject box = AllAnimals[CurrX1, CurrY1];
         AllAnimals[CurrX1, CurrY1] = AllAnimals[CurrX2, CurrY2];
         AllAnimals[CurrX2, CurrY2] = box;
 
-        // обновляем координаты внутри скриптов фишек
         PosPet1.x = CurrX2;
         PosPet2.x = CurrX1;
         PosPet1.y = CurrY2;
         PosPet2.y = CurrY1;
-
-        // двигаем фишки на экране
+        
         pet1.GetComponent<RectTransform>().anchoredPosition = new Vector2(CurrX2 * spacingX - offsetX, CurrY2 * spacingY - offsetY);
         pet2.GetComponent<RectTransform>().anchoredPosition = new Vector2(CurrX1 * spacingX - offsetX, CurrY1 * spacingY - offsetY);
 
@@ -198,10 +195,9 @@ public class _Board : MonoBehaviour
                 {
                     AllAnimals[x1, y1] = null;
                     Destroy(MatchPet);
-                    score += 10;
+                    AddScoreAndCheckingMode(10);
                 }
             }
-            Score_.text = score.ToString();
             StartCoroutine(DropAnimals());
         }
         else if (MatchPet2 != null)
@@ -230,10 +226,9 @@ public class _Board : MonoBehaviour
                 {
                     AllAnimals[x2, y2] = null;
                     Destroy(MatchPet);
-                    score += 10;
+                    AddScoreAndCheckingMode(10);
                 }
             }
-            Score_.text = score.ToString();
             StartCoroutine(DropAnimals());
         }
         else
@@ -250,7 +245,15 @@ public class _Board : MonoBehaviour
         }
         yield return null;
     }
-    // поиск три в ряд 
+    void AddScoreAndCheckingMode(int value)
+    {
+        score += value;
+        if (CurrentMode == "Normal" && score >= 5000)
+        {
+            score = 0;
+        }
+        Score_.text = score.ToString();
+    }
     List<GameObject> CheckMatch(GameObject pet)
     {
         List<GameObject> MatchList = new List<GameObject>();
@@ -261,7 +264,6 @@ public class _Board : MonoBehaviour
         int x = pet.GetComponent<_InteractionWithAnimals>().x;
         int y = pet.GetComponent<_InteractionWithAnimals>().y;
 
-        // поиск по горизонтали
         MatchHorizontal.Add(pet);
         for (int i = x - 1; i >= 0; i--)
         {
@@ -285,16 +287,16 @@ public class _Board : MonoBehaviour
                 break;
             }
         }
-        // поиск по вертикали
+
         MatchVertical.Add(pet);
         for (int i = y - 1; i >= 0; i--)
         {
             if (AllAnimals[x, i] != null && AllAnimals[x, i].tag == CurrTag) {
                 MatchVertical.Add(AllAnimals[x, i]);
             }
-            else 
+            else
             {
-                break; 
+                break;
             }
         }
         for (int i = y + 1; i < height; i++)
@@ -314,7 +316,7 @@ public class _Board : MonoBehaviour
         }
         if (MatchVertical.Count >= 3)
         {
-            foreach (GameObject match in  MatchVertical)
+            foreach (GameObject match in MatchVertical)
             {
                 if (!MatchList.Contains(match))
                 {
@@ -329,7 +331,6 @@ public class _Board : MonoBehaviour
         return null;
     }
 
-    // падение фишек вниз, если под ними пусто
     IEnumerator DropAnimals()
     {
         for (int i = 0; i < width; i++)
@@ -340,11 +341,11 @@ public class _Board : MonoBehaviour
                 {
                     for (int h = j + 1; h < height; h++)
                     {
-                        if (AllAnimals[i, h] !=  null)
+                        if (AllAnimals[i, h] != null)
                         {
                             AllAnimals[i, j] = AllAnimals[i, h];
                             AllAnimals[i, h] = null;
-                            _InteractionWithAnimals Move = AllAnimals[i, j].GetComponent <_InteractionWithAnimals>();
+                            _InteractionWithAnimals Move = AllAnimals[i, j].GetComponent<_InteractionWithAnimals>();
                             Move.y = j;
                             AllAnimals[i, j].GetComponent<RectTransform>().anchoredPosition = new Vector2(i * spacingX - offsetX, j * spacingY - offsetY);
                             break;
@@ -358,7 +359,6 @@ public class _Board : MonoBehaviour
         yield return null;
     }
 
-    // заполнение пустых мест новыми фишками
     void Refilling()
     {
         for (int i = 0; i < width; i++)
@@ -392,10 +392,9 @@ public class _Board : MonoBehaviour
         ChekingTheEntieBoard();
     }
 
-    // проверка всего поля на комбинации три в ряд после падения
     void ChekingTheEntieBoard()
     {
-        for (int i =0; i < width; i++)
+        for (int i = 0; i < width; i++)
         {
             for (int j = 0; j < height; j++)
             {
@@ -422,16 +421,16 @@ public class _Board : MonoBehaviour
     void GameOver()
     {
         IsGameOver = true;
-        Timer_.text = "Время истекло.";
+        Timer_.text = "Р’СЂРµРјСЏ РёСЃС‚РµРєР»Рѕ.";
         Timer_.gameObject.SetActive(false);
         Score_.gameObject.SetActive(false);
-        if (GameOverPan !=  null)
+        if (GameOverPan != null)
         {
             GameOverPan.SetActive(true);
         }
         if (FinalScore != null)
         {
-            FinalScore.text = "Ваш итоговый счет: " + score.ToString();
+            FinalScore.text = "Р’Р°С€ РёС‚РѕРіРѕРІС‹Р№ СЃС‡РµС‚: " + score.ToString();
         }
         int HighestScore = PlayerPrefs.GetInt("HighScore", 0);
         if (score > HighestScore)
@@ -440,35 +439,66 @@ public class _Board : MonoBehaviour
             PlayerPrefs.SetInt("HighScore", HighestScore);
             PlayerPrefs.Save();
         }
-        if (BestScore  != null)
+        if (BestScore != null)
         {
-            BestScore.text = "Лучший результат: " + HighestScore.ToString();
+            BestScore.text = "Р›СѓС‡С€РёР№ СЂРµР·СѓР»СЊС‚Р°С‚: " + HighestScore.ToString();
         }
     }
     void Update()
     {
-        if (timer > 0)
+        if (IsPaused || IsGameOver)
         {
-            timer -= Time.deltaTime;
-            Timer_.text = Mathf.RoundToInt(timer).ToString();
+            return;
         }
-        else if (!IsGameOver)
+        if (CurrentMode == "Timer")
         {
-            GameOver();
+            if (timer > 0)
+            {
+                timer -= Time.deltaTime;
+                Timer_.text = Mathf.RoundToInt(timer).ToString();
+            }
+            else if (!IsGameOver)
+            {
+                GameOver();
+            }
         }
     }
-
+    public void SwitchPauseState()
+    {
+        if (IsGameOver)
+        {
+            return;
+        }
+        IsPaused = !IsPaused;
+        if (IsPaused)
+        {
+            Time.timeScale = 0f;
+            if (PausePan != null)
+            {
+                PausePan.SetActive(true);
+            }
+        }
+        else
+        {
+            Time.timeScale = 1f;
+            if (PausePan != null)
+            {
+                PausePan.SetActive(false);
+            }
+        }
+    }
     public void RestartGame()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void MainMenu()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenu");
     }
     
-    // создание бонусов каждые 10 секунд
     IEnumerator CreateBonus()
     {
         while (!IsGameOver)
@@ -478,7 +508,6 @@ public class _Board : MonoBehaviour
             {
                 continue;
             }
-            // список для поиска обычных животных (не бонусных)
             List<_InteractionWithAnimals> OrdinaryAnimal = new List<_InteractionWithAnimals>();
             for (int x = 0; x < width; x++)
             {
@@ -494,7 +523,6 @@ public class _Board : MonoBehaviour
                     }
                 }
             }
-            // если нашли обычные фишки, превращаем одну случайную в бонус
             if (OrdinaryAnimal.Count > 0)
             {
                 _InteractionWithAnimals RandomAnimal = OrdinaryAnimal[Random.Range(0, OrdinaryAnimal.Count)];
@@ -504,14 +532,12 @@ public class _Board : MonoBehaviour
         }
     }
 
-    // замена обычной фишки на бонусную с передачей координат
     void ReplaceAnimalToBonus(int x, int y)
     {
         GameObject OldAnimal = AllAnimals[x, y];
         string tag = OldAnimal.tag;
         GameObject NecessaryPrefab = null;
 
-        // ищем нужный бонусный префаб по тегу
         foreach (GameObject Prefab_ in BonusPrefabs)
         {
             if (Prefab_.CompareTag(tag))
@@ -537,11 +563,9 @@ public class _Board : MonoBehaviour
         }
     }
 
-    // уничтожение вертикального и горизонтального ряда
     void DestructionByTheCross(int X, int Y)
     {
         List<GameObject> ListForDestruction = new List<GameObject>();
-        // собираем строку
         for (int x = 0; x < width; x++)
         {
             if (AllAnimals[x, Y] != null)
@@ -550,7 +574,6 @@ public class _Board : MonoBehaviour
                 AllAnimals[x, Y] = null;
             }
         }
-        // собираем столбец
         for (int y = 0;  y < height; y++)
         {
             if (AllAnimals[X, y] != null)
@@ -559,13 +582,12 @@ public class _Board : MonoBehaviour
                 AllAnimals[X, y] = null;
             }
         }
-        // уничтожаем и начиляем 70 очков
+
         foreach (GameObject animal in ListForDestruction)
         {
             Destroy(animal);
-            score += 70;
+            AddScoreAndCheckingMode(70);
         }
-        Score_.text = score.ToString();
     }
 }
 
