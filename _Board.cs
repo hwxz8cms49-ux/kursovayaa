@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
-using Unity.VisualScripting;
 
 public class _Board : MonoBehaviour
 {
@@ -125,10 +124,10 @@ public class _Board : MonoBehaviour
         }
         else
         {
-            _InteractionWithAnimals FirstAnimal = CurrentAnimal.GetComponent<_InteractionWithAnimals>();
-            if (FirstAnimal != null)
+            _InteractionWithAnimals SecondAnimal = CurrentAnimal.GetComponent<_InteractionWithAnimals>();
+            if (SecondAnimal != null)
             {
-                FirstAnimal.OffOutline();
+                SecondAnimal.OffOutline();
             }
             int x1 = CurrentAnimal.GetComponent<_InteractionWithAnimals>().x;
             int x2 = pet.GetComponent<_InteractionWithAnimals>().x;
