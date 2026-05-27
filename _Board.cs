@@ -46,10 +46,9 @@ public class _Board : MonoBehaviour
             Timer_.gameObject.SetActive(true);
         }
         AllAnimals = new GameObject[width, height]; 
-        CreateBoard();
+        CreateBoard(); 
         StartCoroutine(CreateBonus()); 
     }
-    
     void CreateBoard()
     {
         offsetX = (width - 1) * spacingX / 2f;
@@ -59,18 +58,17 @@ public class _Board : MonoBehaviour
         {
             for (int y = 0; y < height; y++)
             {
-                int RandomIndex = Random.Range(0, Prefabs.Length);
+                int RandomIndex = Random.Range(0, Prefabs.Length); 
                 while (CoincidencesNearby(x, y, Prefabs[RandomIndex])) 
                 {
                     RandomIndex = Random.Range(0, Prefabs.Length); 
                 }
 
                 Vector2 pos = new Vector2(x * spacingX - offsetX, y * spacingY - offsetY); 
-
                 GameObject Pet = Instantiate(Prefabs[RandomIndex], transform); 
                 Pet.GetComponent<RectTransform>().anchoredPosition = pos; 
 
-                AllAnimals[x, y] = Pet;
+                AllAnimals[x, y] = Pet; 
 
                 if (Pet.GetComponent<_InteractionWithAnimals>() != null)
                 {
@@ -81,7 +79,7 @@ public class _Board : MonoBehaviour
             }
         }
     }
-    
+
     bool CoincidencesNearby(int x, int y, GameObject Dot)
     {
         if (x > 1)
@@ -135,6 +133,7 @@ public class _Board : MonoBehaviour
             int y2 = pet.GetComponent<_InteractionWithAnimals>().y;
             int calcX = Mathf.Abs(x1 - x2);
             int calcY = Mathf.Abs(y1 - y2);
+            // если соседи по горизонтал или вертикали
             if ((calcX == 1 && calcY == 0) || (calcX == 0 && calcY == 1))
             {
                 StartCoroutine(SwapAnimals(CurrentAnimal, pet));
@@ -159,7 +158,7 @@ public class _Board : MonoBehaviour
         PosPet2.x = CurrX1;
         PosPet1.y = CurrY2;
         PosPet2.y = CurrY1;
-        
+
         pet1.GetComponent<RectTransform>().anchoredPosition = new Vector2(CurrX2 * spacingX - offsetX, CurrY2 * spacingY - offsetY);
         pet2.GetComponent<RectTransform>().anchoredPosition = new Vector2(CurrX1 * spacingX - offsetX, CurrY1 * spacingY - offsetY);
 
@@ -193,7 +192,7 @@ public class _Board : MonoBehaviour
                 if (AllAnimals[x1, y1] != null)
                 {
                     AllAnimals[x1, y1] = null;
-                    Destroy(MatchPet);
+                    RemovePetSmoothly(MatchPet, 0.25f);
                     AddScoreAndCheckingMode(10);
                 }
             }
@@ -224,7 +223,7 @@ public class _Board : MonoBehaviour
                 if (AllAnimals[x2, y2] != null)
                 {
                     AllAnimals[x2, y2] = null;
-                    Destroy(MatchPet);
+                    RemovePetSmoothly(MatchPet, 0.25f);
                     AddScoreAndCheckingMode(10);
                 }
             }
@@ -286,7 +285,6 @@ public class _Board : MonoBehaviour
                 break;
             }
         }
-
         MatchVertical.Add(pet);
         for (int i = y - 1; i >= 0; i--)
         {
@@ -332,6 +330,7 @@ public class _Board : MonoBehaviour
 
     IEnumerator DropAnimals()
     {
+        yield return new WaitForSeconds(0.25f);
         for (int i = 0; i < width; i++)
         {
             for (int j = 0; j < height; j++)
@@ -381,7 +380,7 @@ public class _Board : MonoBehaviour
 
                     if (Tile.GetComponent<_InteractionWithAnimals>() != null)
                     {
-                        var script = Tile.GetComponent<_InteractionWithAnimals>();
+                        _InteractionWithAnimals script = Tile.GetComponent<_InteractionWithAnimals>();
                         script.x = i;
                         script.y = j;
                     }
@@ -581,12 +580,35 @@ public class _Board : MonoBehaviour
                 AllAnimals[X, y] = null;
             }
         }
-
         foreach (GameObject animal in ListForDestruction)
         {
-            Destroy(animal);
+            RemovePetSmoothly(animal, 0.25f);
             AddScoreAndCheckingMode(70);
         }
     }
+    public void RemovePetSmoothly(GameObject pet, float duration)
+    {
+        StartCoroutine(AnimateRemoval(pet, duration));
+    }
+
+    private IEnumerator AnimateRemoval(GameObject pet, float duration)
+    {
+        Vector3 initialScale = pet.transform.localScale;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            if (pet == null)
+            {
+                yield break;
+            }
+            elapsed += Time.deltaTime;
+            float perc = elapsed / duration;
+            pet.transform.localScale = Vector3.Lerp(initialScale, Vector3.zero, perc);
+            yield return null;
+        }
+        Destroy(pet);
+    }
+
 }
 
