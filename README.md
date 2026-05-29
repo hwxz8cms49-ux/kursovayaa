@@ -22,19 +22,19 @@
 #### Главное меню и выбор сложности
 Здесь игрок может запустить приложение и выбрать один из двух доступных режимов.
 
-<img src="https://github.com/user-attachments/assets/899e46e2-6302-4bc5-b259-ca31626f8c7f" width="315" alt="Главное меню" />
-<img src="https://github.com/user-attachments/assets/5b55c248-394c-46b2-a363-2c86922d5476" width="315" alt="Выбор сложности" />
+<img src="https://github.com/user-attachments/assets/bf2b979a-2f9c-44c7-a62c-b52db008aade" width="315" alt="Главное меню" />
+<img src="https://github.com/user-attachments/assets/e4fe0029-e890-44de-981d-bd49d838ba97" width="315" alt="Выбор сложности" />
 
 #### Игровой процесс
 Сетка 9x14, анималистичные спрайты фишек и подсветка выбранного животного.
 
-<img src="https://github.com/user-attachments/assets/ac6c7419-372d-4f35-b6a4-9fecfb1f70a8" width="315" alt="Игровой процесс" />
+<img src="https://github.com/user-attachments/assets/e3d72363-428b-4962-97b9-c3f355b7d95f" width="315" alt="Игровой процесс" />
 
 #### Окно Паузы и Завершения игры
 Реализованная система приостановки игрового таймера и сохранения лучшего результата.
 
-<img src="https://github.com/user-attachments/assets/2b2698f2-81e6-4abc-b70f-86a45597a000" width="315" alt="Пауза в игре" />
-<img src="https://github.com/user-attachments/assets/7a182163-3156-4674-959c-54bf71fbd043" width="315" alt="Конец игры и лучший результат" />
+<img src="https://github.com/user-attachments/assets/3d8b40d8-454a-4c47-b473-9117c9544984" width="315" alt="Пауза в игре" />
+<img src="https://github.com/user-attachments/assets/c9714f3d-0a79-4dc8-9689-5ceb2abf13f9" width="315" alt="Конец игры и лучший результат" />
 ---
 
 ## 🎮 Видео геймплея
